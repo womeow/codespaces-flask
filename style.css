@@ -1,0 +1,29 @@
+/* карточка задачи */
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: 0.3s;
+}
+
+/* приоритеты */
+.priority-1 { border-left: 5px solid #dc3545; } /* High - Red */
+.priority-2 { border-left: 5px solid #ffc107; } /* Medium - Yellow */
+.priority-3 { border-left: 5px solid #28a745; } /* Low - Green */
+
+/* визуал просрочки */
+.overdue {
+    background-color: #fff5f5;
+    border: 1px solid #fc8181;
+    animation: pulse 2s infinite;
+}
+
+/* описание анимации для просрочки */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
