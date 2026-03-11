@@ -2,85 +2,72 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Мой Список Дел</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow ✨</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Список задач</h1>
-        
-        <!-- Форма ввода -->
-        <div class="input-group">
-            <input type="text" id="taskTitle" placeholder="Что нужно сделать?">
-            <select id="taskPriority">
-                <option value="1">Высокий</option>
-                <option value="2" selected>Средний</option>
-                <option value="3">Низкий</option>
-            </select>
-            <input type="date" id="taskDeadline">
-            <button onclick="addTask()">Добавить</button>
-        </div>
+    <div class="app">
+        <header class="header">
+            <h1>✨ TaskFlow</h1>
+            <p>Организуй свои задачи красиво</p>
+        </header>
 
-        <ul id="taskList"></ul>
+        <main class="main">
+            <div class="card">
+                <h2>➕ Новая задача</h2>
+                <form id="taskForm" class="task-form">
+                    <input type="text" id="taskInput" placeholder="Что нужно сделать?" required>
+                    
+                    <div class="form-row">
+                        <select id="prioritySelect">
+                            <option value="high">🔴 Высокий</option>
+                            <option value="medium" selected>🟡 Средний</option>
+                            <option value="low">🟢 Низкий</option>
+                        </select>
+                        
+                        <input type="date" id="dueDateInput">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Добавить задачу</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="filters-header">
+                    <h2>🔍 Фильтры</h2>
+                    <span class="task-count" id="taskCount">0 задач</span>
+                </div>
+                
+                <div class="filters">
+                    <select id="priorityFilter" class="filter-select">
+                        <option value="all">Все приоритеты</option>
+                        <option value="high">🔴 Высокий</option>
+                        <option value="medium">🟡 Средний</option>
+                        <option value="low">🟢 Низкий</option>
+                    </select>
+                    
+                    <select id="statusFilter" class="filter-select">
+                        <option value="all">Все задачи</option>
+                        <option value="active">Активные</option>
+                        <option value="completed">Выполненные</option>
+                    </select>
+                    
+                    <select id="sortBy" class="filter-select">
+                        <option value="priority">📊 По приоритету</option>
+                        <option value="dueDate">📅 По сроку</option>
+                        <option value="title">🔤 По названию</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="tasks-section">
+                <h2>📋 Список задач</h2>
+                <div id="tasksList" class="tasks-list"></div>
+            </div>
+        </main>
     </div>
 
-    <script>
-        // Функция для загрузки и отрисовки задач
-        async function renderTasks() {
-            const response = await fetch('/tasks');
-            const tasks = await response.json();
-            const list = document.getElementById('taskList');
-            
-            // Получаем сегодняшнюю дату для сравнения
-            const now = new Date().toISOString().split('T')[0];
-
-            list.innerHTML = tasks.map(task => {
-                // Если дата прошла и задача не готова — она просрочена
-                const isOverdue = task.deadline && task.deadline < now && !task.completed;
-                
-                return `
-                    <li class="task-item priority-${task.priority} ${isOverdue ? 'overdue' : ''}">
-                        <div class="task-info">
-                            <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleTask(${task.id})">
-                            <span class="${task.completed ? 'completed' : ''}">${task.title}</span>
-                            <small>Срок: ${task.deadline || 'не указан'}</small>
-                        </div>
-                        <button class="btn-delete" onclick="deleteTask(${task.id})">🗑️</button>
-                    </li>
-                `;
-            }).join('');
-        }
-
-        // Функция отправки новой задачи на сервер
-        async function addTask() {
-            const title = document.getElementById('taskTitle').value;
-            const priority = document.getElementById('taskPriority').value;
-            const deadline = document.getElementById('taskDeadline').value;
-
-            if (!title) return alert("Введите название!");
-
-            await fetch('/tasks', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ title, priority, deadline })
-            });
-
-            document.getElementById('taskTitle').value = ''; // Очищаем поле
-            renderTasks(); // Обновляем список
-        }
-
-        async function toggleTask(id) {
-            await fetch(`/tasks/${id}`, { method: 'PUT' });
-            renderTasks();
-        }
-
-        async function deleteTask(id) {
-            await fetch(`/tasks/${id}`, { method: 'DELETE' });
-            renderTasks();
-        }
-
-        // Запускаем отрисовку при открытии страницы
-        renderTasks();
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

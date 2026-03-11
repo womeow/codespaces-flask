@@ -3,8 +3,6 @@ import json
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template
 
-
-
 app = Flask(__name__)
 
 DATA_FILE = "tasks.json"
@@ -39,11 +37,11 @@ def add_task():
         return jsonify({"error": "Title is required"}), 400
     
     task = {
-        "id": next_id, 
-        "title": data["title"].strip(), 
+        "id": next_id,
+        "title": data["title"].strip(),
         "completed": False,
         "priority": data.get("priority", "medium"),
-        "due_date": data.get("due_date", None)
+        "due_date": data.get("due_date")
     }
     tasks.append(task)
     next_id += 1
@@ -76,4 +74,3 @@ def home():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-    
